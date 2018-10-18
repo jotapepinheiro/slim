@@ -67,6 +67,10 @@ $container['PasswordController'] = function ($container) {
     return new \App\Controllers\Auth\PasswordController($container);
 };
 
+$container['ApiUserController'] = function ($container) {
+    return new \App\Controllers\Api\ApiUserController($container);
+};
+
 $container['csrf'] = function ($container) {
     return new \Slim\Csrf\Guard;
 };

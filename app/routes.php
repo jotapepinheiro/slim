@@ -1,8 +1,11 @@
 <?php
 
+use App\Middleware\ApiAuthMiddleware;
+use App\Middleware\ApiGuestMiddleware;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 
+// WEB
 $app->get('/', 'HomeController:index')->setName('home');
 
 $app->group('', function () {
@@ -19,3 +22,9 @@ $app->group('', function () {
     $this->get('/auth/password/change', 'PasswordController:getChangePassword')->setName('auth.password.change');
     $this->post('/auth/password/change', 'PasswordController:postChangePassword');
 })->add(new AuthMiddleware($container));
+
+// API
+$app->group('/api', function () {
+    $this->get('/users', 'ApiUserController:index');
+})->add(new ApiAuthMiddleware($container));
+

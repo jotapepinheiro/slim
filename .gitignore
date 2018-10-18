@@ -11,3 +11,4 @@ public/storage
 .env.*.php
 .env.php
 .env
+.zip
