@@ -6,22 +6,12 @@ session_start();
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = new \Slim\App([
-    'settings' => [
-        'displayErrorDetails' => true,
-        'db' => [
-            'driver' => 'mysql',
-            'host' => 'mysql',
-            'database' => 'slim',
-            'username' => 'root',
-            'password' => 'root',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
+$dotenv = new Dotenv\Dotenv(__DIR__ . '/..');
+$dotenv->load();
 
-        ]
-    ],
-]);
+$config = require __DIR__ . '/config.php';
+
+$app = new \Slim\App($config);
 
 $container = $app->getContainer();
 
@@ -44,7 +34,7 @@ $container['flash'] = function ($container) {
 
 $container['view'] = function ($container) {
     $view = new \Slim\Views\Twig(__DIR__ . '/../resources/views', [
-        'cache' => false,
+        'cache' => $container['settings']['cache'],
     ]);
 
     $view->addExtension(new \Slim\Views\TwigExtension(

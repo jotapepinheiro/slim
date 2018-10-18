@@ -1,3 +1,3 @@
-# Slim Framework Authentication
+# Slim Framework
 
-## Base Structure
+## Basic structure with authentication
