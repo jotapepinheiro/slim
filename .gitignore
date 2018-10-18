@@ -4,11 +4,4 @@ npm-debug.log
 
 /.idea
 .DS_Store
-
-# Slim
-bootstrap/compiled.php
-public/storage
-.env.*.php
-.env.php
 .env
-.zip
