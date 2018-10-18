@@ -1,0 +1,42 @@
+{% extends 'templates/app.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Sign up</div>
+                <div class="panel-body">
+
+                    <form action="{{ path_for('auth.signup') }}" method="post">
+
+                        <div class="form-group {{ errors.email ? 'has-error' : '' }}">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" value="{{ old.email }}" placeholder="you@domain.com" class="form-control">
+                            {% if errors.email %}
+                            <span class="help-block">{{ errors.email | first }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-group {{ errors.name ? 'has-error' : '' }}">
+                            <label for="name">Name</label>
+                            <input type="name" name="name" id="name" value="{{ old.name }}"class="form-control">
+                            {% if errors.name %}
+                                <span class="help-block">{{ errors.name | first }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-group {{ errors.password ? 'has-error' : '' }}">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password" placeholder="******" class="form-control">
+                            {% if errors.password %}
+                                <span class="help-block">{{ errors.password | first }}</span>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-default">Sign up</button>
+
+                        {{ csrf.field | raw }}
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

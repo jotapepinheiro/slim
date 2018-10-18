@@ -1,16 +1,42 @@
 <?php
 
+use Respect\Validation\Validator as v;
+
 session_start();
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $app = new \Slim\App([
     'settings' => [
-        'displayErrorDetails' => true
-    ]
+        'displayErrorDetails' => true,
+        'db' => [
+            'driver' => 'mysql',
+            'host' => 'mysql',
+            'database' => 'slim',
+            'username' => 'root',
+            'password' => 'root',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+
+        ]
+    ],
 ]);
 
 $container = $app->getContainer();
+
+$capsule = new \Illuminate\Database\Capsule\Manager;
+$capsule->addConnection($container['settings']['db']);
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
+
+$container['db'] = function ($container) use ($capsule) {
+    return $capsule;
+};
+
+$container['auth'] = function ($container) {
+    return new \App\Auth\Auth;
+};
 
 $container['view'] = function ($container) {
     $view = new \Slim\Views\Twig(__DIR__ . '/../resources/views', [
@@ -22,11 +48,35 @@ $container['view'] = function ($container) {
         $container->request->getUri()
     ));
 
+    $view->getEnvironment()->addGlobal('auth', [
+        'check' => $container->auth->check(),
+        'user' => $container->auth->user()
+    ]);
+
     return $view;
+};
+$container['validator'] = function ($container) {
+    return new \App\Validation\Validator;
 };
 
 $container['HomeController'] = function ($container) {
     return new \App\Controllers\HomeController($container);
 };
+
+$container['AuthController'] = function ($container) {
+    return new \App\Controllers\Auth\AuthController($container);
+};
+
+$container['csrf'] = function ($container) {
+    return new \Slim\Csrf\Guard;
+};
+
+$app->add(new \App\Middleware\ValidationErrorsMiddleware($container));
+$app->add(new \App\Middleware\OldInputMiddleware($container));
+$app->add(new \App\Middleware\CsrfViewMiddleware($container));
+
+$app->add($container->csrf);
+
+v::with('App\\Validation\\Rules\\');
 
 require __DIR__ . '/../app/routes.php';
